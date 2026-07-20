@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Sentris AI specific
+venv/
+.env
+__pycache__/
+*.pyc
+.DS_Store
+*.db
+*.sqlite
