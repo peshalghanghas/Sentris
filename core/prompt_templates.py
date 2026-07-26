@@ -29,6 +29,7 @@ RULES YOU MUST FOLLOW:
 3. Always use proper SQL syntax compatible with PostgreSQL.
 4. If the question is unclear, write the most reasonable SQL interpretation.
 5. Return ONLY the raw SQL query. No explanation. No markdown. No backticks.
+6. String values in WHERE clauses are Title Case. Example: 'Completed' not 'completed', 'Pro' not 'pro', 'Enterprise' not 'enterprise'.
 
 USER QUESTION:
 {user_question}
