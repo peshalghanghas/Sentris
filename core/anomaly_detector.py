@@ -11,10 +11,6 @@ class AnomalyDetector:
     Automatically discovers every table and column
     in any connected database and flags unusual patterns
     without any hardcoding or configuration.
-
-    Based on statistical methods from:
-    'AI-based Immune System for Fraud Detection'
-    Ghanghas et al., IITCEE 2024 (IEEE)
     """
 
     def __init__(self, connector: DatabaseConnector):
