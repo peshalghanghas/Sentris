@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from api.routes import connect
+from api.routes import anomalies
 
 app = FastAPI(
     title="Sentris AI",
@@ -9,6 +10,7 @@ app = FastAPI(
 
 #register route groups 
 app.include_router(connect.router, prefix="/api", tags=["Database"])
+app.include_router(anomalies.router, prefix="/api", tags=["Anomalies"])
 
 @app.get("/health")
 def health_check():
