@@ -16,7 +16,7 @@ class AnomalyDetector:
     def __init__(self, connector: DatabaseConnector):
         self.connector = connector
         self.z_score_threshold = 2.0
-        self.wow_threshold = -0.40
+        self.week_over_week_threshold = -0.40
         self.min_rows = 7
 
         self.date_column_hints = [
@@ -171,9 +171,9 @@ class AnomalyDetector:
                 if previous == 0:
                     continue
 
-                wow_change = (current - previous) / previous
+                week_over_week_change = (current - previous) / previous
 
-                if wow_change < self.wow_threshold:
+                if week_over_week_change < self.week_over_week_threshold:
                     date_val = str(df.iloc[i][date_column])
 
                     already_flagged = any(
@@ -190,9 +190,9 @@ class AnomalyDetector:
                             "metric_display": numeric_column.replace("_", " ").title(),
                             "current_value": round(current, 2),
                             "expected_value": round(previous, 2),
-                            "deviation_percent": round(wow_change * 100, 1),
+                            "deviation_percent": round(week_over_week_change * 100, 1),
                             "z_score": None,
-                            "severity": "Medium" if wow_change > -0.6 else "High",
+                            "severity": "Medium" if week_over_week_change > -0.6 else "High",
                             "direction": "drop",
                             "detection_method": "Week-over-Week"
                         })
@@ -226,7 +226,7 @@ class AnomalyDetector:
                 "tables_scanned": 0,
                 "columns_scanned": 0,
                 "monitorable_tables": [],
-                "scan_method": "Z-Score + Week-over-Week (Based on IEEE AIS Research)"
+                "scan_method": "Z-Score + Week-over-Week"
             }
 
         all_anomalies = []
@@ -262,7 +262,7 @@ class AnomalyDetector:
             "columns_scanned": total_columns_scanned,
             "monitorable_tables": [m["table"] for m in monitorable],
             "anomalies": all_anomalies,
-            "scan_method": "Z-Score + Week-over-Week (Based on IEEE AIS Research)"
+            "scan_method": "Z-Score + Week-over-Week"
         }
 
     def _calculate_severity(self, z_score: float) -> str:
