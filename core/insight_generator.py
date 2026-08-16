@@ -1,20 +1,14 @@
 from openai import OpenAI
-from core.prompt_templates import build_insight_prompt
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class InsightGenerator:
     """
-    takes a raw anomaly and turns it to plain english
-    instead of: "z-score: -3.2, deviation: -86.9%"
-    it says: "the revenus on july 7th was $420,
-    which 86.9% below your daily average of $4,800.
-    this appears to a weekend pattern - the business consistently
-    sees very low activity on saturdays.
-    consider running a friday email campaign to drive
-    weekend sales."
+    Takes a raw anomaly and turns it into a plain English
+    explanation using Nemotron Ultra 550B on NVIDIA NIM.
     """
 
     def __init__(self):
@@ -26,66 +20,116 @@ class InsightGenerator:
 
     def explain_anomaly(self, anomaly: dict) -> dict:
         """
-        takes one anomaly dictionary and adds a
-        plain english explanation to it.
-
-        returns the same anomaly with an added
-        'explanation' field containing nemotron's analysis.
+        Takes one anomaly and adds a plain English explanation.
         """
+        direction = "dropped" if anomaly.get("direction") == "drop" else "increased"
+        metric = anomaly.get("metric_display", "metric")
+        current = anomaly.get("current_value", 0)
+        expected = anomaly.get("expected_value", 0)
+        deviation = abs(anomaly.get("deviation_percent", 0))
+        date = str(anomaly.get("date", "")).split("T")[0].split(" ")[0]
 
-        prompt = build_insight_prompt(anomaly, [])
+        prompt = f"""On {date}, {metric} {direction} to {current} from the normal value of {expected}. This is a {deviation}% change.
+
+Tell this business owner what happened and what to do. Two sentences only. Use the actual numbers."""
 
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {
-                       "role": "system",
-                       "content": "You are Sentris AI, a friendly data analyst. Explain data anomalies in plain English to non-technical business owners. Be specific with the actual numbers. Always end with one clear recommended action. Keep it under 3 sentences." 
+                        "role": "system",
+                        "content": "You are a helpful business analyst. Be concise and direct."
                     },
                     {
                         "role": "user",
                         "content": prompt
                     }
-                ], 
-                temperature=0.3,
-                max_tokens=150
+                ],
+                temperature=0.1,
+                max_tokens=100
             )
 
-            explanation = response.choices[0].message.content.strip()
+            raw = response.choices[0].message.content.strip()
+            cleaned = self._clean_response(raw)
 
             return {
                 **anomaly,
-                "explanation": explanation,
+                "explanation": cleaned,
                 "has_insight": True
             }
 
         except Exception as e:
-            # If Nemotron fails for any reason,
-            # still return the anomaly with a basic fallback
+            # Fallback — build explanation from the numbers directly
+            if direction == "dropped":
+                explanation = (
+                    f"{metric} dropped to {current} on {date}, "
+                    f"which is {deviation}% below the expected {expected}. "
+                    f"Check your data sources and sales channels immediately."
+                )
+            else:
+                explanation = (
+                    f"{metric} spiked to {current} on {date}, "
+                    f"which is {deviation}% above the expected {expected}. "
+                    f"Investigate whether this is a genuine sale or a data error."
+                )
             return {
                 **anomaly,
-                "explanation": (
-                    f"{anomaly['metric_display']} was "
-                    f"{anomaly['deviation_percent']}% below "
-                    f"the expected value of {anomaly['expected_value']}."
-                ),
-                "has_insight": False,
-                "insight_error": str(e)
+                "explanation": explanation,
+                "has_insight": False
             }
+
+    def _clean_response(self, text: str) -> str:
+        """
+        Removes any model thinking text or instruction echoing.
+        """
+        bad_phrases = [
+            "the user wants",
+            "let me analyze",
+            "i need to",
+            "i should",
+            "let me think",
+            "let me write",
+            "write 2 sentences",
+            "sentence 1:",
+            "sentence 2:",
+            "1. what happened",
+            "2. what they",
+            "start writing",
+            "no preamble",
+            "direct answers only",
+            "no explanation of reasoning",
+            "- direct",
+            "data analyst",
+            "two sentences only",
+            "use the actual numbers",
+            "tell this business",
+        ]
+
+        text_lower = text.lower()
+        has_bad = any(phrase in text_lower for phrase in bad_phrases)
+
+        if has_bad:
+            lines = [l.strip() for l in text.split('\n') if l.strip()]
+            clean_lines = []
+            for line in lines:
+                line_lower = line.lower()
+                is_bad = any(phrase in line_lower for phrase in bad_phrases)
+                is_numbered = len(line) > 2 and line[0].isdigit() and line[1] == '.'
+                starts_with_dash = line.startswith('-') and len(line) < 40
+                if not is_bad and not is_numbered and not starts_with_dash:
+                    clean_lines.append(line)
+            if clean_lines:
+                return ' '.join(clean_lines[:2])
+
+        return text
 
     def explain_all(self, anomalies: list) -> list:
         """
         Adds plain English explanations to every anomaly.
-        Processes them one at a time.
-
-        each call uses Nemotron credits.
-        For a large number of anomalies this could
-        be slow so caching will be added in a later version.
         """
         explained = []
         for anomaly in anomalies:
             explained_anomaly = self.explain_anomaly(anomaly)
             explained.append(explained_anomaly)
         return explained
-

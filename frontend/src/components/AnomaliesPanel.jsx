@@ -1,3 +1,4 @@
+import RevenueTrendChart from './RevenueTrendChart'
 import { useState, useEffect } from 'react'
 import { Shield, Loader, RefreshCw, AlertTriangle } from 'lucide-react'
 import { getAnomalies } from '../api'
@@ -59,6 +60,7 @@ export default function AnomaliesPanel({ connectionName }) {
   return (
     <div className="space-y-4">
 
+      {/* Panel Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Shield className="text-teal-400" size={22} />
@@ -77,6 +79,11 @@ export default function AnomaliesPanel({ connectionName }) {
           Rescan
         </button>
       </div>
+
+
+      <RevenueTrendChart connectionName={connectionName} />
+
+
 
       {data && data.total_anomalies > 0 && (
         <div className="grid grid-cols-3 gap-3">

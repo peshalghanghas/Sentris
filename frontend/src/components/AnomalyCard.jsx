@@ -21,6 +21,23 @@ const SEVERITY_CONFIG = {
   }
 }
 
+// Decide whether to show $ sign based on metric name
+function formatValue(value, metricDisplay) {
+  const metric = metricDisplay.toLowerCase()
+  const isCurrency = metric.includes('revenue') ||
+    metric.includes('amount') ||
+    metric.includes('total') ||
+    metric.includes('price') ||
+    metric.includes('sales')
+
+  const num = Number(value)
+
+  if (isCurrency) {
+    return `$${num.toLocaleString()}`
+  }
+  return num.toLocaleString()
+}
+
 export default function AnomalyCard({ anomaly }) {
   const config = SEVERITY_CONFIG[anomaly.severity] || SEVERITY_CONFIG.Low
   const isDrop = anomaly.direction === 'drop'
@@ -30,12 +47,16 @@ export default function AnomalyCard({ anomaly }) {
     : 'Unknown date'
 
   const explanation = anomaly.explanation
-    ? anomaly.explanation.split('\n')[0].trim()
+    ? anomaly.explanation.trim()
     : null
+
+  const actualDisplay = formatValue(anomaly.current_value, anomaly.metric_display)
+  const expectedDisplay = formatValue(anomaly.expected_value, anomaly.metric_display)
 
   return (
     <div className={`rounded-xl border p-4 ${config.bg} ${config.border}`}>
 
+      {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
           {config.icon}
@@ -53,11 +74,12 @@ export default function AnomalyCard({ anomaly }) {
         </span>
       </div>
 
+      {/* Numbers */}
       <div className="flex items-center gap-6 mb-3">
         <div>
           <p className="text-xs text-slate-400 mb-0.5">Actual</p>
           <p className="text-white font-bold text-xl">
-            ${Number(anomaly.current_value).toLocaleString()}
+            {actualDisplay}
           </p>
         </div>
         <div className="flex items-center gap-1">
@@ -73,11 +95,12 @@ export default function AnomalyCard({ anomaly }) {
         <div>
           <p className="text-xs text-slate-400 mb-0.5">Expected</p>
           <p className="text-slate-300 font-medium text-xl">
-            ${Number(anomaly.expected_value).toLocaleString()}
+            {expectedDisplay}
           </p>
         </div>
       </div>
 
+      {/* AI Explanation */}
       {explanation && (
         <div className="bg-slate-900/60 rounded-lg px-3 py-2 mb-2">
           <p className="text-slate-300 text-xs leading-relaxed">
@@ -86,6 +109,7 @@ export default function AnomalyCard({ anomaly }) {
         </div>
       )}
 
+      {/* Footer */}
       <div className="flex items-center justify-between mt-1">
         <span className="text-xs text-slate-500">
           {anomaly.detection_method}

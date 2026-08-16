@@ -1,3 +1,4 @@
+import ChartRenderer from './ChartRenderer'
 import { useState } from 'react'
 import { Search, Loader, ChevronDown, ChevronUp } from 'lucide-react'
 import { askQuestion } from '../api'
@@ -125,6 +126,11 @@ export default function QueryPanel({ connectionName }) {
               </code>
             </div>
           )}
+
+          <ChartRenderer
+            columns={result.results.columns}
+            rows={result.results.rows}
+          />
 
           <ResultsTable
             columns={result.results.columns}
