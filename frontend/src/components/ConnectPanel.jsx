@@ -4,7 +4,7 @@ import { connectDatabase } from '../api'
 
 export default function ConnectPanel({ onConnected }) {
   const [dbUrl, setDbUrl] = useState('')
-  const [connName, setConnName] = useState('my_business_db')
+  const [connName, setConnName] = useState('sentris_demo')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -23,21 +23,17 @@ export default function ConnectPanel({ onConnected }) {
         setError(result.error || 'Could not connect to database')
       }
     } catch (err) {
-      setError('Connection failed. Make sure your backend is running on port 8000.')
+      setError('Connection failed. Make sure your backend is running.')
     } finally {
       setLoading(false)
     }
-  }
-
-  const fillDemo = () => {
-    setDbUrl('postgresql://sentris_user:sentris_password_123@localhost:5432/sentris_dev')
-    setConnName('my_business_db')
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md">
 
+        {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-3">
             <Database className="text-teal-400" size={32} />
@@ -46,12 +42,14 @@ export default function ConnectPanel({ onConnected }) {
           <p className="text-slate-400">Your proactive data guardian</p>
         </div>
 
+        {/* Connect Card */}
         <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
           <h2 className="text-lg font-semibold text-white mb-4">
             Connect your database
           </h2>
 
           <div className="space-y-4">
+
             <div>
               <label className="block text-sm text-slate-400 mb-1">
                 Connection name
@@ -61,7 +59,7 @@ export default function ConnectPanel({ onConnected }) {
                 value={connName}
                 onChange={(e) => setConnName(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500"
-                placeholder="my_business_db"
+                placeholder="my_database"
               />
             </div>
 
@@ -70,15 +68,15 @@ export default function ConnectPanel({ onConnected }) {
                 Database URL
               </label>
               <input
-                type="text"
+                type="password"
                 value={dbUrl}
                 onChange={(e) => setDbUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500 font-mono"
-                placeholder="postgresql://user:password@localhost:5432/dbname"
+                placeholder="postgresql://user:password@host:5432/db"
               />
               <p className="text-xs text-slate-500 mt-1">
-                Sentris connects read-only. Your data never leaves your server.
+                Sentris connects read-only. Your credentials are never stored.
               </p>
             </div>
 
@@ -105,17 +103,13 @@ export default function ConnectPanel({ onConnected }) {
                 </>
               )}
             </button>
+
           </div>
         </div>
 
-        <p className="text-center text-slate-500 text-sm mt-4">
-          Testing locally?{' '}
-          <button
-            onClick={fillDemo}
-            className="text-teal-400 hover:text-teal-300 underline"
-          >
-            Use demo database
-          </button>
+        {/* Security note */}
+        <p className="text-center text-slate-500 text-xs mt-4">
+          🔒 Your database URL is never saved or logged
         </p>
 
       </div>
