@@ -17,6 +17,7 @@ app.add_middleware(
         "https://sentris.vercel.app",
         "https://sentris-app.vercel.app",
         "https://sentrisai.vercel.app",
+        "https://sentris-sage.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
