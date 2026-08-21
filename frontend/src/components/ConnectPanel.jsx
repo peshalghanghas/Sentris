@@ -247,7 +247,7 @@ export default function ConnectPanel({ onConnected, darkMode, setDarkMode }) {
             className="text-sm font-medium"
             style={{ color: 'var(--text-secondary)' }}
           >
-            Your proactive AI data guardian
+            From database to decisions.
           </p>
         </div>
 
