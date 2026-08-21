@@ -164,7 +164,7 @@ export default function ConnectPanel({ onConnected, darkMode, setDarkMode }) {
                 placeholder="postgresql://user:password@host:5432/db"
               />
               <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
-                🔒 Read-only connection. Your credentials are never stored.
+                Read-only connection. Your credentials are never stored.
               </p>
             </div>
 
@@ -211,15 +211,11 @@ export default function ConnectPanel({ onConnected, darkMode, setDarkMode }) {
                 background: 'transparent'
               }}
             >
-              ✦ Try with demo database
+              Try with demo database
             </button>
 
           </div>
         </div>
-
-        <p className="text-center text-xs mt-6" style={{ color: 'var(--text-muted)' }}>
-          Built on IEEE published research · NVIDIA Nemotron Ultra 550B
-        </p>
 
       </div>
     </div>
