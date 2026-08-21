@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentris AI — from database to decisions</title>
+<meta name="description" content="Sentris connects to any database, watches it around the clock for problems nobody asked about, and answers plain English questions about your data. No SQL required.">
+<meta property="og:title" content="Sentris AI — from database to decisions">
+<meta property="og:description" content="Proactive AI data analyst. No SQL, no $80,000-a-year analyst.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #fbf6ee; }
+@keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(50px,-30px) scale(1.1); } }
+@keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-40px,40px) scale(1.06); } }
+@keyframes drift3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(35px,45px) scale(0.96); } }
+a { text-decoration: none; }
+::selection { background: rgba(20,184,166,0.25); }
+</style>
+</head>
+<body>
+
+<div style="position: relative; background: #fbf6ee; color: #23202b; font-family: 'Public Sans', sans-serif; overflow: hidden;">
+
+  <!-- Background orbs -->
+  <div style="position: absolute; top: -160px; left: -140px; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(255,214,102,0.55), transparent 72%); filter: blur(20px); animation: drift1 24s ease-in-out infinite; pointer-events: none;"></div>
+  <div style="position: absolute; top: 60px; right: -150px; width: 460px; height: 460px; border-radius: 50%; background: radial-gradient(circle, rgba(126,217,187,0.55), transparent 72%); filter: blur(20px); animation: drift2 26s ease-in-out infinite; pointer-events: none;"></div>
+  <div style="position: absolute; top: 560px; left: 6%; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(255,163,194,0.5), transparent 72%); filter: blur(20px); animation: drift3 22s ease-in-out infinite; pointer-events: none;"></div>
+  <div style="position: absolute; top: 820px; right: 8%; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(196,181,253,0.5), transparent 72%); filter: blur(20px); animation: drift1 20s ease-in-out infinite reverse; pointer-events: none;"></div>
+  <div style="position: absolute; top: 1450px; left: 38%; width: 440px; height: 440px; border-radius: 50%; background: radial-gradient(circle, rgba(160,210,255,0.5), transparent 72%); filter: blur(20px); animation: drift2 28s ease-in-out infinite reverse; pointer-events: none;"></div>
+
+  <!-- Nav -->
+  <nav style="position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; padding: 18px clamp(20px,5vw,64px); background: rgba(251,246,238,0.7); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(35,32,43,0.08); flex-wrap: wrap; gap: 12px;">
+    <span style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.01em; background: linear-gradient(90deg, #0f9b8e, #7c5cf0); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;">Sentris</span>
+    <div style="display: flex; gap: 26px; align-items: center; flex-wrap: wrap;">
+      <a href="#how" style="color: rgba(35,32,43,0.72); font-size: 14px; font-weight: 500;">How it works</a>
+      <a href="#anomalies" style="color: rgba(35,32,43,0.72); font-size: 14px; font-weight: 500;">Anomaly detection</a>
+      <a href="#architecture" style="color: rgba(35,32,43,0.72); font-size: 14px; font-weight: 500;">Architecture</a>
+      <a href="#security" style="color: rgba(35,32,43,0.72); font-size: 14px; font-weight: 500;">Security</a>
+      <a href="https://sentris-sage.vercel.app" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 100px; background: linear-gradient(90deg, #14b8a6, #7c5cf0); color: #fff; font-weight: 600; font-size: 14px;">Try the live demo</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section style="position: relative; max-width: 980px; margin: 0 auto; padding: 110px 24px 90px; text-align: center;">
+    <span style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.65); border: 1px solid rgba(35,32,43,0.1); font-size: 13px; color: rgba(35,32,43,0.75); margin-bottom: 26px;">
+      <span style="width: 6px; height: 6px; border-radius: 50%; background: #0f9b8e;"></span>
+      Proactive AI data analyst
+    </span>
+    <h1 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(38px, 6.2vw, 72px); line-height: 1.08; letter-spacing: -0.02em; margin: 0;">
+      From database to<br>
+      <span style="background: linear-gradient(90deg, #0f9b8e, #7c5cf0, #e0629b); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;">decisions.</span>
+    </h1>
+    <p style="font-size: 18px; line-height: 1.6; color: rgba(35,32,43,0.68); max-width: 620px; margin: 26px auto 0;">Sentris connects to any database, watches it around the clock for problems nobody asked about, and answers plain English questions about your data. No SQL, no $80,000-a-year analyst.</p>
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px;">
+      <a href="https://sentris-sage.vercel.app" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; border-radius: 100px; background: linear-gradient(90deg, #14b8a6, #7c5cf0); color: #fff; font-weight: 700; font-size: 15px; box-shadow: 0 12px 28px rgba(124,92,240,0.28);">
+        Try the live demo
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+      <a href="#how" style="display: inline-flex; align-items: center; padding: 14px 28px; border-radius: 100px; background: rgba(255,255,255,0.7); border: 1px solid rgba(35,32,43,0.12); color: #23202b; font-weight: 600; font-size: 15px;">See how it works</a>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section aria-label="Sentris by the numbers" style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 90px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px;">
+      <div style="padding: 26px 22px; border-radius: 20px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+        <p style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 32px; margin: 0; color: #0f9b8e;">$80K+</p>
+        <p style="font-size: 13px; color: rgba(35,32,43,0.62); margin: 8px 0 0;">Yearly analyst cost, replaced</p>
+      </div>
+      <div style="padding: 26px 22px; border-radius: 20px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+        <p style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 32px; margin: 0; color: #7c5cf0;">550B</p>
+        <p style="font-size: 13px; color: rgba(35,32,43,0.62); margin: 8px 0 0;">Parameters in the model behind it</p>
+      </div>
+      <div style="padding: 26px 22px; border-radius: 20px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+        <p style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 32px; margin: 0; color: #e0629b;">23</p>
+        <p style="font-size: 13px; color: rgba(35,32,43,0.62); margin: 8px 0 0;">Anomalies found on a schema it had never seen</p>
+      </div>
+      <div style="padding: 26px 22px; border-radius: 20px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+        <p style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 32px; margin: 0; color: #d68f2b;">&lt;3s</p>
+        <p style="font-size: 13px; color: rgba(35,32,43,0.62); margin: 8px 0 0;">To scan every table and column</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" style="position: relative; max-width: 1080px; margin: 0 auto; padding: 40px 24px 90px;">
+    <p style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #0f9b8e; font-weight: 700; margin: 0 0 14px;">How it works</p>
+    <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.01em; margin: 0 0 40px; max-width: 30ch;">Three steps between your data and an answer.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #ffe08a, #ffb703); display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 800; color: #23202b; margin-bottom: 18px;">01</div>
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Connect</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Paste a read-only database connection string. Sentris auto-discovers every table and column — no schema mapping, no config.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #7ed9bb, #0f9b8e); display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 800; color: #fff; margin-bottom: 18px;">02</div>
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Ask, or just wait</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Type a plain English question, or let Sentris scan every table on its own — it's looking for problems whether you ask or not.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #c4b5fd, #7c5cf0); display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-weight: 800; color: #fff; margin-bottom: 18px;">03</div>
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Get an answer, explained</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Results render as charts or tables, and every anomaly comes with a plain English explanation and a recommended action.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What it does -->
+  <section style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 90px;">
+    <p style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #7c5cf0; font-weight: 700; margin: 0 0 14px;">What it does</p>
+    <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.01em; margin: 0 0 40px; max-width: 32ch;">Four things a $80,000 analyst does, running all the time.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,224,138,0.35); border: 1px solid rgba(255,255,255,0.7);">
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Natural language to SQL</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Ask "who are my top 5 customers by spending?" — Sentris converts it to SQL with NVIDIA Nemotron Ultra 550B, runs it against your real database, and returns results.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(126,217,187,0.3); border: 1px solid rgba(255,255,255,0.7);">
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Proactive anomaly detection</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Automatically scans every table and column using Z-score analysis and week-over-week comparison. Finds problems nobody asked it to look for.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(196,181,253,0.32); border: 1px solid rgba(255,255,255,0.7);">
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Auto-detecting charts</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Query results render as line charts for time series, bar charts for comparisons, or plain tables — whichever fits the data best.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,163,194,0.3); border: 1px solid rgba(255,255,255,0.7);">
+        <h3 style="font-size: 19px; margin: 0 0 10px; font-family: 'Manrope', sans-serif; font-weight: 700;">Works on any database</h3>
+        <p style="font-size: 14.5px; line-height: 1.6; color: rgba(35,32,43,0.68); margin: 0;">Auto-discovers every table and column in any connected PostgreSQL database. Tested on a custom demo database and the Chinook database, zero configuration.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Anomaly detection -->
+  <section id="anomalies" style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 90px;">
+    <div style="border-radius: 28px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.85); padding: clamp(28px, 5vw, 48px); backdrop-filter: blur(10px);">
+      <p style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #0f9b8e; font-weight: 700; margin: 0 0 14px;">Anomaly detection</p>
+      <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(26px, 3vw, 34px); letter-spacing: -0.01em; margin: 0 0 16px; max-width: 34ch;">Built on published statistical research, not guesswork.</h2>
+      <p style="font-size: 15px; line-height: 1.7; color: rgba(35,32,43,0.7); max-width: 68ch; margin: 0 0 32px;">The detection engine is based on IEEE research on Artificial Immune Systems by Peshal Ghanghas (IITCEE 2024). It auto-discovers tables with date and numeric columns — no hardcoding — then flags values more than 2 standard deviations from the mean, and any metric that dropped more than 40% week over week.</p>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 480px;">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 10px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(35,32,43,0.55); border-bottom: 2px solid rgba(35,32,43,0.12);">Z-score</th>
+              <th style="text-align: left; padding: 10px 14px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(35,32,43,0.55); border-bottom: 2px solid rgba(35,32,43,0.12);">Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 12px 14px; border-bottom: 1px solid rgba(35,32,43,0.08);">&gt; 3.0 or &lt; -3.0</td>
+              <td style="padding: 12px 14px; border-bottom: 1px solid rgba(35,32,43,0.08);"><span style="display: inline-flex; padding: 4px 12px; border-radius: 100px; background: rgba(255,163,194,0.4); color: #a3305c; font-size: 12.5px; font-weight: 600;">High</span></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 14px; border-bottom: 1px solid rgba(35,32,43,0.08);">&gt; 2.5 or &lt; -2.5</td>
+              <td style="padding: 12px 14px; border-bottom: 1px solid rgba(35,32,43,0.08);"><span style="display: inline-flex; padding: 4px 12px; border-radius: 100px; background: rgba(255,224,138,0.5); color: #9a6b0a; font-size: 12.5px; font-weight: 600;">Medium</span></td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 14px;">&gt; 2.0 or &lt; -2.0</td>
+              <td style="padding: 12px 14px;"><span style="display: inline-flex; padding: 4px 12px; border-radius: 100px; background: rgba(126,217,187,0.4); color: #157a5f; font-size: 12.5px; font-weight: 600;">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 13.5px; color: rgba(35,32,43,0.55); margin: 20px 0 0;">Spikes and drops are handled separately with distinct trending arrows. A full scan runs in under 3 seconds — AI explanations are generated on demand per anomaly, not in batch.</p>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section id="architecture" style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 90px;">
+    <p style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #7c5cf0; font-weight: 700; margin: 0 0 14px;">Architecture</p>
+    <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.01em; margin: 0 0 40px; max-width: 30ch;">What it's built on.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <h3 style="font-size: 17px; margin: 0 0 14px; font-family: 'Manrope', sans-serif; font-weight: 700; color: #0f9b8e;">Backend</h3>
+        <p style="font-size: 14.5px; line-height: 1.75; color: rgba(35,32,43,0.68); margin: 0;">Python 3.13 + FastAPI, SQLAlchemy for connections, Pandas + SciPy for anomaly detection, sqlglot for SQL validation. SELECT-only enforced. Deployed on Render.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <h3 style="font-size: 17px; margin: 0 0 14px; font-family: 'Manrope', sans-serif; font-weight: 700; color: #7c5cf0;">Frontend</h3>
+        <p style="font-size: 14.5px; line-height: 1.75; color: rgba(35,32,43,0.68); margin: 0;">React 18 + Vite, Tailwind CSS, Recharts for visualization, Lucide icons. Dark/light mode via CSS variables with animated gradient orbs. Deployed on Vercel.</p>
+      </div>
+      <div style="padding: 28px 24px; border-radius: 20px; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.85);">
+        <h3 style="font-size: 17px; margin: 0 0 14px; font-family: 'Manrope', sans-serif; font-weight: 700; color: #e0629b;">Database &amp; AI</h3>
+        <p style="font-size: 14.5px; line-height: 1.75; color: rgba(35,32,43,0.68); margin: 0;">PostgreSQL on Supabase with a session pooler. NVIDIA NIM infrastructure running Nemotron Ultra 550B for NL-to-SQL and anomaly explanations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security -->
+  <section id="security" style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 100px;">
+    <p style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #d68f2b; font-weight: 700; margin: 0 0 14px;">Security</p>
+    <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.01em; margin: 0 0 32px; max-width: 32ch;">Read-only by design, from day one.</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+      <div style="padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.85);">
+        <p style="font-weight: 700; font-size: 15px; margin: 0 0 6px;">Read-only enforcement</p>
+        <p style="font-size: 14px; color: rgba(35,32,43,0.65); margin: 0;">Only SELECT statements run. DROP, DELETE, INSERT, UPDATE, ALTER and TRUNCATE are all blocked.</p>
+      </div>
+      <div style="padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.85);">
+        <p style="font-weight: 700; font-size: 15px; margin: 0 0 6px;">SQL validation</p>
+        <p style="font-size: 14px; color: rgba(35,32,43,0.65); margin: 0;">sqlglot parses every generated query before it reaches the database, catching syntax errors first.</p>
+      </div>
+      <div style="padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.85);">
+        <p style="font-weight: 700; font-size: 15px; margin: 0 0 6px;">Credentials</p>
+        <p style="font-size: 14px; color: rgba(35,32,43,0.65); margin: 0;">Database URLs are never stored or logged. The connection field uses type="password".</p>
+      </div>
+      <div style="padding: 20px; border-radius: 16px; background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.85);">
+        <p style="font-weight: 700; font-size: 15px; margin: 0 0 6px;">CORS</p>
+        <p style="font-size: 14px; color: rgba(35,32,43,0.65); margin: 0;">Restricted to specific Vercel and localhost origins only.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="position: relative; max-width: 1080px; margin: 0 auto; padding: 0 24px 110px;">
+    <div style="border-radius: 32px; background: linear-gradient(120deg, #ffe08a, #7ed9bb 45%, #c4b5fd 75%, #ffa3c2); padding: clamp(40px, 6vw, 64px); text-align: center;">
+      <h2 style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.02em; margin: 0 0 16px; color: #201830;">See it read a database it's never seen before.</h2>
+      <p style="font-size: 16px; color: rgba(32,24,48,0.72); max-width: 52ch; margin: 0 auto 30px;">The live demo runs against the industry-standard Chinook database — no setup, no sign-up.</p>
+      <a href="https://sentris-sage.vercel.app" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; border-radius: 100px; background: #201830; color: #fff; font-weight: 700; font-size: 15px;">
+        Try the live demo
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="position: relative; max-width: 1080px; margin: 0 auto; padding: 32px 24px 40px; border-top: 1px solid rgba(35,32,43,0.1); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center;">
+    <span style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 16px; background: linear-gradient(90deg, #0f9b8e, #7c5cf0); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent;">Sentris</span>
+    <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+      <a href="https://sentris-sage.vercel.app" target="_blank" rel="noopener" style="font-size: 13.5px; color: rgba(35,32,43,0.6);">App</a>
+      <a href="https://sentris-api.onrender.com" target="_blank" rel="noopener" style="font-size: 13.5px; color: rgba(35,32,43,0.6);">API</a>
+      <a href="https://github.com/peshalghanghas/Sentris" target="_blank" rel="noopener" style="font-size: 13.5px; color: rgba(35,32,43,0.6);">GitHub</a>
+    </div>
+    <span style="font-size: 12.5px; color: rgba(35,32,43,0.45);">From database to decisions.</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
