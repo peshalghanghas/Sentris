@@ -13,7 +13,7 @@ def get_anomalies(connection_name: str, explain: bool = True):
     """
     Runs a full anomaly scan on any connected database.
     Auto-discovers all tables and columns worth monitoring.
-    Only generates AI explanations for top 10 anomalies to keep response fast.
+    Only generates AI explanations for top 5 anomalies to keep response fast.
     """
     if connection_name not in active_connections:
         return {"error": "No active connection. Connect to a database first."}
@@ -36,11 +36,11 @@ def get_anomalies(connection_name: str, explain: bool = True):
         }
 
     if explain and scan_result["anomalies"]:
-        # Only explain top 10 anomalies to keep response under 30 seconds
-        top_10 = scan_result["anomalies"][:10]
-        rest = scan_result["anomalies"][10:]
-        explained_top_10 = insight_generator.explain_all(top_10)
-        scan_result["anomalies"] = explained_top_10 + rest
+        # Only explain top 5 anomalies to make responses quicker
+        top_5 = scan_result["anomalies"][:5]
+        rest = scan_result["anomalies"][5:]
+        explained_top_5 = insight_generator.explain_all(top_5)
+        scan_result["anomalies"] = explained_top_5 + rest
 
     return {
         "success": True,

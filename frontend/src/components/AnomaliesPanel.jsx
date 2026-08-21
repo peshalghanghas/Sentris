@@ -38,7 +38,7 @@ export default function AnomaliesPanel({ connectionName }) {
             Running anomaly detection across all tables and columns
           </p>
           <p className="text-slate-500 text-xs mt-1">
-            Generating AI explanations for top 10 anomalies — takes 20-30 seconds
+            Generating explanations for top 5 anomalies — takes 20-30 seconds
           </p>
         </div>
       </div>
@@ -53,6 +53,13 @@ export default function AnomaliesPanel({ connectionName }) {
           <span className="font-medium text-sm">Scan failed</span>
         </div>
         <p className="text-red-400 text-sm">{error}</p>
+        <button
+          onClick={loadAnomalies}
+          className="mt-3 text-xs text-slate-400 hover:text-white flex items-center gap-1"
+        >
+          <RefreshCw size={12} />
+          Try again
+        </button>
       </div>
     )
   }
@@ -130,9 +137,9 @@ export default function AnomaliesPanel({ connectionName }) {
         <div className="space-y-3">
           <p className="text-slate-400 text-sm font-medium">
             {data.total_anomalies} anomalies detected
-            {data.total_anomalies > 10 && (
+            {data.total_anomalies > 5 && (
               <span className="text-slate-500 text-xs ml-2">
-                (showing AI explanations for top 10)
+                (showing AI explanations for top 5)
               </span>
             )}
           </p>
