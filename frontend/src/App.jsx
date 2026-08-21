@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ConnectPanel from './components/ConnectPanel'
 import Dashboard from './components/Dashboard'
 
 export default function App() {
   const [connectionName, setConnectionName] = useState(null)
   const [schema, setSchema] = useState(null)
+  const [darkMode, setDarkMode] = useState(true)
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.remove('light')
+    } else {
+      document.documentElement.classList.add('light')
+    }
+  }, [darkMode])
 
   const handleConnected = (name, schemaData) => {
     setConnectionName(name)
@@ -17,7 +26,13 @@ export default function App() {
   }
 
   if (!connectionName) {
-    return <ConnectPanel onConnected={handleConnected} />
+    return (
+      <ConnectPanel
+        onConnected={handleConnected}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+      />
+    )
   }
 
   return (
@@ -25,6 +40,8 @@ export default function App() {
       connectionName={connectionName}
       schema={schema}
       onDisconnect={handleDisconnect}
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
     />
   )
 }

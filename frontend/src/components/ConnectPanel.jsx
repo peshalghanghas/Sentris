@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Database, Loader } from 'lucide-react'
+import { Database, Loader, Sun, Moon } from 'lucide-react'
 import { connectDatabase } from '../api'
 
-export default function ConnectPanel({ onConnected }) {
+export default function ConnectPanel({ onConnected, darkMode, setDarkMode }) {
   const [dbUrl, setDbUrl] = useState('')
   const [connName, setConnName] = useState('sentris_demo')
   const [loading, setLoading] = useState(false)
@@ -35,41 +35,119 @@ export default function ConnectPanel({ onConnected }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center">
+
+      {/* Gradient background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="orb-1 absolute w-96 h-96 rounded-full opacity-20 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #6366f1, #8b5cf6)',
+            top: '-10%',
+            left: '-5%'
+          }}
+        />
+        <div
+          className="orb-2 absolute w-80 h-80 rounded-full opacity-20 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #14b8a6, #06b6d4)',
+            top: '20%',
+            right: '-5%'
+          }}
+        />
+        <div
+          className="orb-3 absolute w-72 h-72 rounded-full opacity-15 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #f59e0b, #ef4444)',
+            bottom: '-5%',
+            left: '30%'
+          }}
+        />
+      </div>
+
+      {/* Dark/Light toggle */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="absolute top-6 right-6 p-2.5 rounded-xl glass border z-10 transition-all hover:scale-105"
+        style={{
+          background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+          borderColor: 'var(--border)',
+          color: 'var(--text-secondary)'
+        }}
+      >
+        {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
+
+      {/* Connect Card */}
+      <div className="relative z-10 w-full max-w-md px-6">
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Database className="text-teal-400" size={32} />
-            <h1 className="text-3xl font-bold text-white">Sentris AI</h1>
+        <div className="text-center mb-10">
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+            style={{
+              background: 'linear-gradient(135deg, #14b8a6, #6366f1)',
+            }}
+          >
+            <Database size={28} className="text-white" />
           </div>
-          <p className="text-slate-400">Your proactive data guardian</p>
+          <h1
+            className="text-4xl font-bold mb-2"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Sentris AI
+          </h1>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            Your proactive data guardian
+          </p>
         </div>
 
-        {/* Connect Card */}
-        <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        {/* Form Card */}
+        <div
+          className="glass rounded-3xl p-8 border"
+          style={{
+            background: darkMode ? 'rgba(17,17,17,0.8)' : 'rgba(255,255,255,0.8)',
+            borderColor: 'var(--border)',
+            boxShadow: darkMode
+              ? '0 25px 50px rgba(0,0,0,0.5)'
+              : '0 25px 50px rgba(0,0,0,0.08)'
+          }}
+        >
+          <h2
+            className="text-lg font-semibold mb-6"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Connect your database
           </h2>
 
           <div className="space-y-4">
 
             <div>
-              <label className="block text-sm text-slate-400 mb-1">
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 Connection name
               </label>
               <input
                 type="text"
                 value={connName}
                 onChange={(e) => setConnName(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500"
+                className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                style={{
+                  background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
                 placeholder="my_database"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-slate-400 mb-1">
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: 'var(--text-secondary)' }}
+              >
                 Database URL
               </label>
               <input
@@ -77,16 +155,27 @@ export default function ConnectPanel({ onConnected }) {
                 value={dbUrl}
                 onChange={(e) => setDbUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
-                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500 font-mono"
+                className="w-full rounded-xl px-4 py-3 text-sm font-mono outline-none transition-all"
+                style={{
+                  background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
+                }}
                 placeholder="postgresql://user:password@host:5432/db"
               />
-              <p className="text-xs text-slate-500 mt-1">
-                Sentris connects read-only. Your credentials are never stored.
+              <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
+                🔒 Read-only connection. Your credentials are never stored.
               </p>
             </div>
 
             {error && (
-              <div className="bg-red-900/30 border border-red-700 rounded-lg px-3 py-2 text-red-400 text-sm">
+              <div className="rounded-xl px-4 py-3 text-sm"
+                style={{
+                  background: 'rgba(239,68,68,0.1)',
+                  border: '1px solid rgba(239,68,68,0.3)',
+                  color: '#ef4444'
+                }}
+              >
                 {error}
               </div>
             )}
@@ -94,7 +183,11 @@ export default function ConnectPanel({ onConnected }) {
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="w-full bg-teal-600 hover:bg-teal-500 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #14b8a6, #6366f1)',
+                boxShadow: '0 8px 20px rgba(99,102,241,0.3)'
+              }}
             >
               {loading ? (
                 <>
@@ -109,20 +202,23 @@ export default function ConnectPanel({ onConnected }) {
               )}
             </button>
 
-            {/* Demo button */}
             <button
               onClick={fillDemo}
-              className="w-full text-slate-400 hover:text-teal-400 text-sm transition-colors py-2 border-t border-slate-700 pt-4"
+              className="w-full py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-80"
+              style={{
+                color: 'var(--accent)',
+                border: '1px solid var(--border)',
+                background: 'transparent'
+              }}
             >
-              Try with demo database →
+              ✦ Try with demo database
             </button>
 
           </div>
         </div>
 
-        {/* Security note */}
-        <p className="text-center text-slate-500 text-xs mt-4">
-            Your database URL is never saved or logged
+        <p className="text-center text-xs mt-6" style={{ color: 'var(--text-muted)' }}>
+          Built on IEEE published research · NVIDIA Nemotron Ultra 550B
         </p>
 
       </div>

@@ -1,7 +1,7 @@
-export default function ResultsTable({ columns, rows }) {
+export default function ResultsTable({ columns, rows, darkMode }) {
   if (!rows || rows.length === 0) {
     return (
-      <div className="px-4 py-8 text-center text-slate-400 text-sm">
+      <div className="px-5 py-10 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
         No results found
       </div>
     )
@@ -11,11 +11,12 @@ export default function ResultsTable({ columns, rows }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-slate-900">
+          <tr style={{ background: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }}>
             {columns.map((col) => (
               <th
                 key={col}
-                className="px-4 py-2.5 text-left text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap"
+                className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
+                style={{ color: 'var(--text-muted)', borderBottom: '1px solid var(--border)' }}
               >
                 {col.replace(/_/g, ' ')}
               </th>
@@ -26,16 +27,20 @@ export default function ResultsTable({ columns, rows }) {
           {rows.map((row, i) => (
             <tr
               key={i}
-              className="border-t border-slate-700 hover:bg-slate-700/50 transition-colors"
+              className="transition-colors"
+              style={{
+                borderBottom: '1px solid var(--border)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               {columns.map((col) => (
                 <td
                   key={col}
-                  className="px-4 py-2.5 text-slate-300 whitespace-nowrap"
+                  className="px-5 py-3 whitespace-nowrap"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
-                  {row[col] !== null && row[col] !== undefined
-                    ? String(row[col])
-                    : '—'}
+                  {row[col] !== null && row[col] !== undefined ? String(row[col]) : '—'}
                 </td>
               ))}
             </tr>

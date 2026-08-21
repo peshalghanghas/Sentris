@@ -4,7 +4,7 @@ import { getAnomalies } from '../api'
 import AnomalyCard from './AnomalyCard'
 import RevenueTrendChart from './RevenueTrendChart'
 
-export default function AnomaliesPanel({ connectionName }) {
+export default function AnomaliesPanel({ connectionName, darkMode }) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
@@ -15,31 +15,46 @@ export default function AnomaliesPanel({ connectionName }) {
     try {
       const result = await getAnomalies(connectionName, true)
       setData(result)
-    } catch (err) {
+    } catch {
       setError('Could not load anomalies. Make sure your backend is running.')
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    loadAnomalies()
-  }, [connectionName])
+  useEffect(() => { loadAnomalies() }, [connectionName])
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <Loader size={36} className="animate-spin text-teal-400" />
+      <div className="flex flex-col items-center justify-center py-24 gap-5">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #14b8a6, #6366f1)' }}
+        >
+          <Shield size={28} className="text-white animate-pulse" />
+        </div>
         <div className="text-center">
-          <p className="text-white font-medium mb-1">
+          <p className="font-semibold text-lg mb-1" style={{ color: 'var(--text-primary)' }}>
             Sentris is scanning your database
           </p>
-          <p className="text-slate-400 text-sm">
+          <p className="text-sm mb-1" style={{ color: 'var(--text-secondary)' }}>
             Running anomaly detection across all tables and columns
           </p>
-          <p className="text-slate-500 text-xs mt-1">
-            Generating explanations for top 5 anomalies — takes 20-30 seconds
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            AI explanations for top 5 anomalies — takes 10-15 seconds
           </p>
+        </div>
+        <div className="flex gap-1">
+          {[0,1,2].map(i => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full animate-bounce"
+              style={{
+                background: 'var(--accent)',
+                animationDelay: `${i * 0.15}s`
+              }}
+            />
+          ))}
         </div>
       </div>
     )
@@ -47,87 +62,101 @@ export default function AnomaliesPanel({ connectionName }) {
 
   if (error) {
     return (
-      <div className="bg-red-900/30 border border-red-700 rounded-xl p-4">
-        <div className="flex items-center gap-2 text-red-400 mb-1">
-          <AlertTriangle size={16} />
-          <span className="font-medium text-sm">Scan failed</span>
+      <div
+        className="rounded-2xl p-5 border"
+        style={{
+          background: 'rgba(239,68,68,0.08)',
+          borderColor: 'rgba(239,68,68,0.2)'
+        }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <AlertTriangle size={16} style={{ color: '#ef4444' }} />
+          <span className="font-semibold text-sm" style={{ color: '#ef4444' }}>
+            Scan failed
+          </span>
         </div>
-        <p className="text-red-400 text-sm">{error}</p>
+        <p className="text-sm mb-3" style={{ color: '#ef4444' }}>{error}</p>
         <button
           onClick={loadAnomalies}
-          className="mt-3 text-xs text-slate-400 hover:text-white flex items-center gap-1"
+          className="flex items-center gap-1.5 text-xs transition-all hover:opacity-70"
+          style={{ color: 'var(--text-muted)' }}
         >
-          <RefreshCw size={12} />
-          Try again
+          <RefreshCw size={12} /> Try again
         </button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
 
-      {/* Panel Header */}
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Shield className="text-teal-400" size={22} />
-          <div>
-            <h2 className="text-white font-semibold">Anomaly Detection</h2>
-            <p className="text-slate-400 text-xs">
-              {data?.tables_scanned} tables · {data?.columns_scanned} columns scanned
-            </p>
-          </div>
+        <div>
+          <h2 className="font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
+            Anomaly Detection
+          </h2>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            {data?.tables_scanned} tables · {data?.columns_scanned} columns scanned
+          </p>
         </div>
         <button
           onClick={loadAnomalies}
-          className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors text-xs"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all hover:opacity-70"
+          style={{
+            border: '1px solid var(--border)',
+            color: 'var(--text-secondary)',
+            background: 'var(--bg-card)'
+          }}
         >
-          <RefreshCw size={14} />
-          Rescan
+          <RefreshCw size={13} /> Rescan
         </button>
       </div>
 
-      {/* Revenue Trend Chart */}
-      <RevenueTrendChart connectionName={connectionName} />
+      {/* Revenue Chart */}
+      <RevenueTrendChart connectionName={connectionName} darkMode={darkMode} />
 
-      {/* Severity Summary Cards */}
+      {/* Severity Cards */}
       {data && data.total_anomalies > 0 && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 text-center">
-            <p className="text-3xl font-bold text-red-400">
-              {data.severity_breakdown.high}
-            </p>
-            <p className="text-xs text-red-400 mt-1">High</p>
-          </div>
-          <div className="bg-amber-900/20 border border-amber-800/50 rounded-xl p-4 text-center">
-            <p className="text-3xl font-bold text-amber-400">
-              {data.severity_breakdown.medium}
-            </p>
-            <p className="text-xs text-amber-400 mt-1">Medium</p>
-          </div>
-          <div className="bg-blue-900/20 border border-blue-800/50 rounded-xl p-4 text-center">
-            <p className="text-3xl font-bold text-blue-400">
-              {data.severity_breakdown.low}
-            </p>
-            <p className="text-xs text-blue-400 mt-1">Low</p>
-          </div>
+          {[
+            { label: 'High', count: data.severity_breakdown.high, color: '#ef4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)' },
+            { label: 'Medium', count: data.severity_breakdown.medium, color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)' },
+            { label: 'Low', count: data.severity_breakdown.low, color: '#6366f1', bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.2)' },
+          ].map(({ label, count, color, bg, border }) => (
+            <div
+              key={label}
+              className="rounded-2xl p-5 text-center border"
+              style={{ background: bg, borderColor: border }}
+            >
+              <p className="text-4xl font-bold mb-1" style={{ color }}>{count}</p>
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color }}>{label}</p>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* All Clear State */}
+      {/* All Clear */}
       {data && data.total_anomalies === 0 && (
-        <div className="text-center py-16">
-          <Shield size={52} className="text-teal-400 mx-auto mb-4" />
-          <p className="text-white font-semibold text-lg">All clear</p>
-          <p className="text-slate-400 text-sm mt-1">
+        <div className="text-center py-20">
+          <div
+            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5"
+            style={{ background: 'linear-gradient(135deg, #14b8a6, #6366f1)' }}
+          >
+            <Shield size={36} className="text-white" />
+          </div>
+          <p className="font-bold text-xl mb-2" style={{ color: 'var(--text-primary)' }}>
+            All clear
+          </p>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             No anomalies detected across {data.tables_scanned} tables
           </p>
         </div>
       )}
 
-      {/* Scan Method Badge */}
+      {/* Scan method */}
       {data && (
-        <p className="text-xs text-slate-500 text-center">
+        <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>
           {data.scan_method}
         </p>
       )}
@@ -135,16 +164,21 @@ export default function AnomaliesPanel({ connectionName }) {
       {/* Anomaly Cards */}
       {data && data.anomalies && data.anomalies.length > 0 && (
         <div className="space-y-3">
-          <p className="text-slate-400 text-sm font-medium">
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
             {data.total_anomalies} anomalies detected
             {data.total_anomalies > 5 && (
-              <span className="text-slate-500 text-xs ml-2">
-                (showing AI explanations for top 5)
+              <span className="font-normal ml-2 text-xs" style={{ color: 'var(--text-muted)' }}>
+                (AI explanations for top 5)
               </span>
             )}
           </p>
           {data.anomalies.map((anomaly, i) => (
-            <AnomalyCard key={i} anomaly={anomaly} />
+            <AnomalyCard
+              key={i}
+              anomaly={anomaly}
+              connectionName={connectionName}
+              darkMode={darkMode}
+            />
           ))}
         </div>
       )}

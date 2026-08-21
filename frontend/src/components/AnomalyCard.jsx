@@ -1,126 +1,152 @@
-import { AlertTriangle, TrendingDown, TrendingUp, Info } from 'lucide-react'
+import { useState } from 'react'
+import { AlertTriangle, TrendingDown, TrendingUp, Info, Loader, Sparkles } from 'lucide-react'
+import api from '../api'
 
-const SEVERITY_CONFIG = {
-  High: {
-    bg: 'bg-red-900/30',
-    border: 'border-red-700',
-    badge: 'bg-red-700 text-red-100',
-    icon: <AlertTriangle size={16} className="text-red-400" />
-  },
-  Medium: {
-    bg: 'bg-amber-900/30',
-    border: 'border-amber-700',
-    badge: 'bg-amber-700 text-amber-100',
-    icon: <AlertTriangle size={16} className="text-amber-400" />
-  },
-  Low: {
-    bg: 'bg-blue-900/30',
-    border: 'border-blue-700',
-    badge: 'bg-blue-700 text-blue-100',
-    icon: <Info size={16} className="text-blue-400" />
-  }
-}
-
-// Decide whether to show $ sign based on metric name
 function formatValue(value, metricDisplay) {
-  const metric = metricDisplay.toLowerCase()
-  const isCurrency = metric.includes('revenue') ||
-    metric.includes('amount') ||
-    metric.includes('total') ||
-    metric.includes('price') ||
-    metric.includes('sales')
-
+  const metric = (metricDisplay || '').toLowerCase()
+  const isCurrency = metric.includes('revenue') || metric.includes('amount') ||
+    metric.includes('total') || metric.includes('price') || metric.includes('sales')
   const num = Number(value)
-
-  if (isCurrency) {
-    return `$${num.toLocaleString()}`
-  }
+  if (isCurrency) return `$${num.toLocaleString()}`
   return num.toLocaleString()
 }
 
-export default function AnomalyCard({ anomaly }) {
-  const config = SEVERITY_CONFIG[anomaly.severity] || SEVERITY_CONFIG.Low
+const SEVERITY = {
+  High: {
+    gradient: 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))',
+    border: 'rgba(239,68,68,0.3)',
+    badge: { background: 'rgba(239,68,68,0.2)', color: '#ef4444' },
+    icon: <AlertTriangle size={15} style={{ color: '#ef4444' }} />
+  },
+  Medium: {
+    gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))',
+    border: 'rgba(245,158,11,0.3)',
+    badge: { background: 'rgba(245,158,11,0.2)', color: '#f59e0b' },
+    icon: <AlertTriangle size={15} style={{ color: '#f59e0b' }} />
+  },
+  Low: {
+    gradient: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05))',
+    border: 'rgba(99,102,241,0.3)',
+    badge: { background: 'rgba(99,102,241,0.2)', color: '#6366f1' },
+    icon: <Info size={15} style={{ color: '#6366f1' }} />
+  }
+}
+
+export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
+  const config = SEVERITY[anomaly.severity] || SEVERITY.Low
   const isDrop = anomaly.direction === 'drop'
+  const [explanation, setExplanation] = useState(anomaly.explanation || null)
+  const [loadingExp, setLoadingExp] = useState(false)
 
   const dateDisplay = anomaly.date
     ? anomaly.date.split('T')[0].split(' ')[0]
-    : 'Unknown date'
+    : 'Unknown'
 
-  const explanation = anomaly.explanation
-    ? anomaly.explanation.trim()
-    : null
-
-  const actualDisplay = formatValue(anomaly.current_value, anomaly.metric_display)
-  const expectedDisplay = formatValue(anomaly.expected_value, anomaly.metric_display)
+  const handleExplain = async () => {
+    setLoadingExp(true)
+    try {
+      const response = await api.post(`/anomalies/${connectionName}/explain`, anomaly)
+      setExplanation(response.data.explanation)
+    } catch {
+      setExplanation('Could not generate explanation.')
+    } finally {
+      setLoadingExp(false)
+    }
+  }
 
   return (
-    <div className={`rounded-xl border p-4 ${config.bg} ${config.border}`}>
-
+    <div
+      className="rounded-2xl p-5 border transition-all"
+      style={{
+        background: config.gradient,
+        borderColor: config.border,
+      }}
+    >
       {/* Header */}
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-2.5">
           {config.icon}
           <div>
-            <p className="text-white font-medium text-sm">
+            <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
               {anomaly.metric_display}
             </p>
-            <p className="text-slate-400 text-xs">
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
               {anomaly.table} · {dateDisplay}
             </p>
           </div>
         </div>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ml-2 ${config.badge}`}>
+        <span
+          className="text-xs px-2.5 py-1 rounded-full font-semibold shrink-0 ml-2"
+          style={config.badge}
+        >
           {anomaly.severity}
         </span>
       </div>
 
-      {/* Numbers */}
-      <div className="flex items-center gap-6 mb-3">
+      {/* Metrics */}
+      <div className="flex items-center gap-6 mb-4">
         <div>
-          <p className="text-xs text-slate-400 mb-0.5">Actual</p>
-          <p className="text-white font-bold text-xl">
-            {actualDisplay}
+          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Actual</p>
+          <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+            {formatValue(anomaly.current_value, anomaly.metric_display)}
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          {isDrop ? (
-            <TrendingDown size={20} className="text-red-400" />
-          ) : (
-            <TrendingUp size={20} className="text-green-400" />
-          )}
-          <span className={`font-bold text-sm ${isDrop ? 'text-red-400' : 'text-green-400'}`}>
+        <div className="flex items-center gap-1.5">
+          {isDrop
+            ? <TrendingDown size={18} style={{ color: '#ef4444' }} />
+            : <TrendingUp size={18} style={{ color: '#22c55e' }} />
+          }
+          <span
+            className="font-bold text-sm"
+            style={{ color: isDrop ? '#ef4444' : '#22c55e' }}
+          >
             {anomaly.deviation_percent}%
           </span>
         </div>
         <div>
-          <p className="text-xs text-slate-400 mb-0.5">Expected</p>
-          <p className="text-slate-300 font-medium text-xl">
-            {expectedDisplay}
+          <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Expected</p>
+          <p className="text-2xl font-bold" style={{ color: 'var(--text-secondary)' }}>
+            {formatValue(anomaly.expected_value, anomaly.metric_display)}
           </p>
         </div>
       </div>
 
-      {/* AI Explanation */}
-      {explanation && (
-        <div className="bg-slate-900/60 rounded-lg px-3 py-2 mb-2">
-          <p className="text-slate-300 text-xs leading-relaxed">
-            {explanation}
-          </p>
+      {/* Explanation */}
+      {explanation ? (
+        <div
+          className="rounded-xl px-4 py-3 text-xs leading-relaxed mb-3"
+          style={{
+            background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.6)',
+            color: 'var(--text-secondary)'
+          }}
+        >
+          {explanation}
         </div>
+      ) : (
+        <button
+          onClick={handleExplain}
+          disabled={loadingExp}
+          className="flex items-center gap-1.5 text-xs font-medium mb-3 transition-all hover:opacity-70 disabled:opacity-40"
+          style={{ color: 'var(--accent)' }}
+        >
+          {loadingExp
+            ? <><Loader size={11} className="animate-spin" /> Generating...</>
+            : <><Sparkles size={11} /> Explain this anomaly</>
+          }
+        </button>
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-1">
-        <span className="text-xs text-slate-500">
+      <div className="flex items-center justify-between">
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
           {anomaly.detection_method}
         </span>
         {anomaly.z_score && (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Z-score: {anomaly.z_score}
           </span>
         )}
       </div>
-
     </div>
   )
 }
