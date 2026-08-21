@@ -11,30 +11,16 @@ insight_generator = InsightGenerator()
 @router.get("/anomalies/{connection_name}")
 def get_anomalies(connection_name: str, explain: bool = True):
     """
-    Runs a full anomaly scan on any connected DB.
-
-    Auto-discovers all tables and columns for monitoring.
-    works on any database structure.
-
-    Parameters:
-    - connection_name: name you used when connecting
-    - if True, Nemotron adds plain English
-    explanations to each anomaly (default True)
-
-    sentris is proactive
-    It finds problems without anyone asking.
+    Runs a full anomaly scan on any connected database.
+    Auto-discovers all tables and columns worth monitoring.
+    Only generates AI explanations for top 10 anomalies to keep response fast.
     """
     if connection_name not in active_connections:
-        return {
-            "error": "No active connection. Connect to a database first."
-        }
+        return {"error": "No active connection. Connect to a database first."}
 
     connector = active_connections[connection_name]
-
-    # Get schema so detector knows what exists
     schema = connector.get_schema()
 
-    # Run full scan across all discovered tables and columns
     detector = AnomalyDetector(connector)
     scan_result = detector.run_full_scan(schema)
 
@@ -49,11 +35,12 @@ def get_anomalies(connection_name: str, explain: bool = True):
             "anomalies": []
         }
 
-  
     if explain and scan_result["anomalies"]:
-        scan_result["anomalies"] = insight_generator.explain_all(
-            scan_result["anomalies"]
-        )
+        # Only explain top 10 anomalies to keep response under 30 seconds
+        top_10 = scan_result["anomalies"][:10]
+        rest = scan_result["anomalies"][10:]
+        explained_top_10 = insight_generator.explain_all(top_10)
+        scan_result["anomalies"] = explained_top_10 + rest
 
     return {
         "success": True,
@@ -64,14 +51,11 @@ def get_anomalies(connection_name: str, explain: bool = True):
 @router.get("/anomalies/{connection_name}/summary")
 def get_anomaly_summary(connection_name: str):
     """
-    Returns just the count and severity breakdown
-    Faster than full scan
-    No Nemotron calls
+    Returns just the count and severity breakdown.
+    Faster — used for dashboard header. No AI calls.
     """
     if connection_name not in active_connections:
-        return {
-            "error": "No active connection. Connect to a database first."
-        }
+        return {"error": "No active connection. Connect to a database first."}
 
     connector = active_connections[connection_name]
     schema = connector.get_schema()

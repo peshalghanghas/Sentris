@@ -1,8 +1,8 @@
-import RevenueTrendChart from './RevenueTrendChart'
 import { useState, useEffect } from 'react'
 import { Shield, Loader, RefreshCw, AlertTriangle } from 'lucide-react'
 import { getAnomalies } from '../api'
 import AnomalyCard from './AnomalyCard'
+import RevenueTrendChart from './RevenueTrendChart'
 
 export default function AnomaliesPanel({ connectionName }) {
   const [loading, setLoading] = useState(true)
@@ -38,7 +38,7 @@ export default function AnomaliesPanel({ connectionName }) {
             Running anomaly detection across all tables and columns
           </p>
           <p className="text-slate-500 text-xs mt-1">
-            This takes 20–40 seconds while AI generates explanations
+            Generating AI explanations for top 10 anomalies — takes 20-30 seconds
           </p>
         </div>
       </div>
@@ -80,11 +80,10 @@ export default function AnomaliesPanel({ connectionName }) {
         </button>
       </div>
 
-
+      {/* Revenue Trend Chart */}
       <RevenueTrendChart connectionName={connectionName} />
 
-
-
+      {/* Severity Summary Cards */}
       {data && data.total_anomalies > 0 && (
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 text-center">
@@ -108,6 +107,7 @@ export default function AnomaliesPanel({ connectionName }) {
         </div>
       )}
 
+      {/* All Clear State */}
       {data && data.total_anomalies === 0 && (
         <div className="text-center py-16">
           <Shield size={52} className="text-teal-400 mx-auto mb-4" />
@@ -118,16 +118,23 @@ export default function AnomaliesPanel({ connectionName }) {
         </div>
       )}
 
+      {/* Scan Method Badge */}
       {data && (
         <p className="text-xs text-slate-500 text-center">
           {data.scan_method}
         </p>
       )}
 
+      {/* Anomaly Cards */}
       {data && data.anomalies && data.anomalies.length > 0 && (
         <div className="space-y-3">
           <p className="text-slate-400 text-sm font-medium">
             {data.total_anomalies} anomalies detected
+            {data.total_anomalies > 10 && (
+              <span className="text-slate-500 text-xs ml-2">
+                (showing AI explanations for top 10)
+              </span>
+            )}
           </p>
           {data.anomalies.map((anomaly, i) => (
             <AnomalyCard key={i} anomaly={anomaly} />
