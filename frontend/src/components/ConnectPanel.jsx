@@ -323,7 +323,7 @@ export default function ConnectPanel({ onConnected, darkMode, setDarkMode }) {
                 placeholder="postgresql://user:password@host:5432/db"
               />
               <p className="text-xs mt-2 flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                <span>🔒</span> Read-only. Credentials never stored.
+                Read-only. Credentials never stored.
               </p>
             </div>
 
