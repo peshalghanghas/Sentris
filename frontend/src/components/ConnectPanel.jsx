@@ -29,6 +29,11 @@ export default function ConnectPanel({ onConnected }) {
     }
   }
 
+  const fillDemo = () => {
+    setDbUrl(import.meta.env.VITE_DEMO_DB_URL || '')
+    setConnName('chinook_demo')
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md">
@@ -104,12 +109,20 @@ export default function ConnectPanel({ onConnected }) {
               )}
             </button>
 
+            {/* Demo button */}
+            <button
+              onClick={fillDemo}
+              className="w-full text-slate-400 hover:text-teal-400 text-sm transition-colors py-2 border-t border-slate-700 pt-4"
+            >
+              Try with demo database →
+            </button>
+
           </div>
         </div>
 
         {/* Security note */}
         <p className="text-center text-slate-500 text-xs mt-4">
-          🔒 Your database URL is never saved or logged
+            Your database URL is never saved or logged
         </p>
 
       </div>
