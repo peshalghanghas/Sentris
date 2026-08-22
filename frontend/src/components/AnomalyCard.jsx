@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AlertTriangle, TrendingDown, TrendingUp, Info, Loader, Sparkles } from 'lucide-react'
+import { AlertTriangle, TrendingDown, TrendingUp, Info, Loader, Sparkles, ThumbsUp, ThumbsDown, Check } from 'lucide-react'
 import api from '../api'
 
 function formatValue(value, metricDisplay) {
@@ -37,6 +37,8 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
   const isDrop = anomaly.direction === 'drop'
   const [explanation, setExplanation] = useState(anomaly.explanation || null)
   const [loadingExp, setLoadingExp] = useState(false)
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(null)
+  const [submittingFeedback, setSubmittingFeedback] = useState(false)
 
   const dateDisplay = anomaly.date
     ? anomaly.date.split('T')[0].split(' ')[0]
@@ -51,6 +53,30 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
       setExplanation('Could not generate explanation.')
     } finally {
       setLoadingExp(false)
+    }
+  }
+
+  const handleFeedback = async (isCorrect) => {
+    setSubmittingFeedback(true)
+    try {
+      const anomalyId = `${anomaly.table}.${anomaly.column}.${anomaly.date}`
+      const response = await api.post(`/anomalies/${connectionName}/feedback`, {
+        anomaly_id: anomalyId,
+        table_name: anomaly.table,
+        column_name: anomaly.column,
+        anomaly_value: anomaly.current_value,
+        detected_at: anomaly.date,
+        is_correct: isCorrect,
+        user_feedback: null
+      })
+      
+      if (response.data.success) {
+        setFeedbackSubmitted(isCorrect ? 'correct' : 'false')
+      }
+    } catch (error) {
+      console.error('Failed to submit feedback:', error)
+    } finally {
+      setSubmittingFeedback(false)
     }
   }
 
@@ -135,6 +161,54 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
           }
         </button>
       )}
+
+      {/* Feedback Buttons */}
+      <div className="mb-3 p-3 rounded-lg" style={{ background: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.4)' }}>
+        <p className="text-xs font-semibold mb-2" style={{ color: 'var(--text-muted)' }}>
+          Is this correct?
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleFeedback(true)}
+            disabled={submittingFeedback || feedbackSubmitted !== null}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-all"
+            style={{
+              background: feedbackSubmitted === 'correct' 
+                ? 'rgba(34, 197, 94, 0.3)' 
+                : 'rgba(34, 197, 94, 0.1)',
+              color: feedbackSubmitted === 'correct' ? '#22c55e' : 'var(--text-secondary)',
+              border: `1px solid ${feedbackSubmitted === 'correct' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(34, 197, 94, 0.2)'}`,
+              cursor: submittingFeedback || feedbackSubmitted !== null ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {feedbackSubmitted === 'correct' ? (
+              <><Check size={14} /> Correct</>
+            ) : (
+              <><ThumbsUp size={14} /> Correct</>
+            )}
+          </button>
+
+          <button
+            onClick={() => handleFeedback(false)}
+            disabled={submittingFeedback || feedbackSubmitted !== null}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-all"
+            style={{
+              background: feedbackSubmitted === 'false' 
+                ? 'rgba(239, 68, 68, 0.3)' 
+                : 'rgba(239, 68, 68, 0.1)',
+              color: feedbackSubmitted === 'false' ? '#ef4444' : 'var(--text-secondary)',
+              border: `1px solid ${feedbackSubmitted === 'false' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.2)'}`,
+              cursor: submittingFeedback || feedbackSubmitted !== null ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {feedbackSubmitted === 'false' ? (
+              <><Check size={14} /> False Alarm</>
+            ) : (
+              <><ThumbsDown size={14} /> False Alarm</>
+            )}
+          </button>
+        </div>
+      </div>
 
       {/* Footer */}
       <div className="flex items-center justify-between">

@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, text, inspect
 from dotenv import load_dotenv
 
 load_dotenv()
+
 '''
  handles all communication between sentris and the db, 
  creates a db connection, checks availability, reads db structure, 
@@ -30,8 +31,8 @@ class DatabaseConnector:
             print(f"Connection failed: {e}")
             return False
 
-# retrieves information about the db structure, such as columns from the current table
-# the number of records from the sql result    
+    # retrieves information about the db structure, such as columns from the current table
+    # the number of records from the sql result    
     def get_schema(self):
         if not self.engine:
             return {"error": "Not connected to a database"}
@@ -73,7 +74,7 @@ class DatabaseConnector:
                 rows = result.fetchall()
                 columns = list(result.keys())
 
-# convert db into a json friendly format
+                # convert db into a json friendly format
 
                 return {
                     "columns": columns,
@@ -83,9 +84,39 @@ class DatabaseConnector:
 
         except Exception as e:
             return {"error": str(e)}
+
+    def execute_raw_query(self, sql: str, params: tuple = None):
+        """
+        Execute a raw SQL query with parameters.
+        Used for INSERT, UPDATE, DELETE operations and SELECT with params.
+        Returns raw result rows for processing.
+        Enables human-in-the-loop data collection via feedback system.
+        """
+        if not self.engine:
+            return {"error": "Not connected to a database"}
+
+        try:
+            with self.engine.connect() as conn:
+                if params:
+                    result = conn.execute(text(sql), params)
+                else:
+                    result = conn.execute(text(sql))
+                
+                # For INSERT/UPDATE/DELETE, commit the transaction
+                conn.commit()
+                
+                # For SELECT queries, fetch results
+                if sql.strip().upper().startswith('SELECT'):
+                    rows = result.fetchall()
+                    return rows
+                else:
+                    # For INSERT/UPDATE/DELETE, return number of rows affected
+                    return result.rowcount
+                    
+        except Exception as e:
+            return {"error": str(e)}
         
-# closes the db connection when the application shuts down
-  
+    # closes the db connection when the application shuts down
     def close(self):
         if self.engine:
             self.engine.dispose()
