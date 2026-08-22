@@ -57,6 +57,11 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
   }
 
   const handleFeedback = async (isCorrect) => {
+    // Allow changing feedback - don't block if already submitted
+    if (feedbackSubmitted === (isCorrect ? 'correct' : 'false')) {
+      return // User clicked same button twice, ignore
+    }
+    
     setSubmittingFeedback(true)
     try {
       const anomalyId = `${anomaly.table}.${anomaly.metric}.${anomaly.date}`
@@ -170,7 +175,7 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
         <div className="flex gap-2">
           <button
             onClick={() => handleFeedback(true)}
-            disabled={submittingFeedback || feedbackSubmitted !== null}
+            disabled={submittingFeedback}
             className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-all"
             style={{
               background: feedbackSubmitted === 'correct' 
@@ -178,7 +183,7 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
                 : 'rgba(34, 197, 94, 0.1)',
               color: feedbackSubmitted === 'correct' ? '#22c55e' : 'var(--text-secondary)',
               border: `1px solid ${feedbackSubmitted === 'correct' ? 'rgba(34, 197, 94, 0.5)' : 'rgba(34, 197, 94, 0.2)'}`,
-              cursor: submittingFeedback || feedbackSubmitted !== null ? 'not-allowed' : 'pointer'
+              cursor: submittingFeedback ? 'not-allowed' : 'pointer'
             }}
           >
             {feedbackSubmitted === 'correct' ? (
@@ -190,7 +195,7 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
 
           <button
             onClick={() => handleFeedback(false)}
-            disabled={submittingFeedback || feedbackSubmitted !== null}
+            disabled={submittingFeedback}
             className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold py-2 px-3 rounded-lg transition-all"
             style={{
               background: feedbackSubmitted === 'false' 
@@ -198,7 +203,7 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
                 : 'rgba(239, 68, 68, 0.1)',
               color: feedbackSubmitted === 'false' ? '#ef4444' : 'var(--text-secondary)',
               border: `1px solid ${feedbackSubmitted === 'false' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(239, 68, 68, 0.2)'}`,
-              cursor: submittingFeedback || feedbackSubmitted !== null ? 'not-allowed' : 'pointer'
+              cursor: submittingFeedback ? 'not-allowed' : 'pointer'
             }}
           >
             {feedbackSubmitted === 'false' ? (
