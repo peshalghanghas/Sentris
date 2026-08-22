@@ -24,7 +24,7 @@ class AnomalyFeedbackRequest(BaseModel):
 
 
 @router.get("/anomalies/{connection_name}")
-def get_anomalies(connection_name: str, explain: bool = True):
+async def get_anomalies(connection_name: str, explain: bool = True):
     """
     Runs a full anomaly scan on any connected database.
     Auto-discovers all tables and columns worth monitoring.
@@ -64,7 +64,7 @@ def get_anomalies(connection_name: str, explain: bool = True):
 
 
 @router.get("/anomalies/{connection_name}/summary")
-def get_anomaly_summary(connection_name: str):
+async def get_anomaly_summary(connection_name: str):
     """
     Returns just the count and severity breakdown.
     Faster — used for dashboard header. No AI calls.
@@ -89,10 +89,12 @@ def get_anomaly_summary(connection_name: str):
     }
 
 
+# ============================================
 # FEEDBACK ENDPOINTS - For Labeling Feature
+# ============================================
 
 @router.post("/anomalies/{connection_name}/feedback")
-def submit_anomaly_feedback(connection_name: str, feedback: AnomalyFeedbackRequest):
+async def submit_anomaly_feedback(connection_name: str, feedback: AnomalyFeedbackRequest):
     """
     User marks an anomaly as correct or false positive.
     Stores feedback in database for model training/validation.
@@ -140,7 +142,7 @@ def submit_anomaly_feedback(connection_name: str, feedback: AnomalyFeedbackReque
 
 
 @router.get("/anomalies/{connection_name}/feedback/accuracy")
-def get_feedback_accuracy(connection_name: str):
+async def get_feedback_accuracy(connection_name: str):
     """
     Returns labeling accuracy statistics.
     Shows how many anomalies were marked as correct vs false positives.
@@ -190,7 +192,7 @@ def get_feedback_accuracy(connection_name: str):
 
 
 @router.get("/anomalies/{connection_name}/feedback/list")
-def get_feedback_list(connection_name: str, limit: int = 50):
+async def get_feedback_list(connection_name: str, limit: int = 50):
     """
     Returns list of all feedback submitted (latest first).
     Useful for reviewing labeling history and data collection progress.
