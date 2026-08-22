@@ -59,11 +59,11 @@ export default function AnomalyCard({ anomaly, connectionName, darkMode }) {
   const handleFeedback = async (isCorrect) => {
     setSubmittingFeedback(true)
     try {
-      const anomalyId = `${anomaly.table}.${anomaly.column}.${anomaly.date}`
+      const anomalyId = `${anomaly.table}.${anomaly.metric}.${anomaly.date}`
       const response = await api.post(`/anomalies/${connectionName}/feedback`, {
         anomaly_id: anomalyId,
         table_name: anomaly.table,
-        column_name: anomaly.column,
+        column_name: anomaly.metric,
         anomaly_value: anomaly.current_value,
         detected_at: anomaly.date,
         is_correct: isCorrect,
